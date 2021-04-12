@@ -9,5 +9,6 @@
 
 - [什么是TIDB]()
 - [安装TIDB](https://docs.pingcap.com/zh/tidb/stable/quick-start-with-tidb)
+- [TiDB架构]()
 - [SQL基本操作]()
 
