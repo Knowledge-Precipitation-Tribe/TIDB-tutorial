@@ -12,6 +12,63 @@ TiDB 分布式数据库将整体架构拆分成了多个模块，各模块之间
   - TiKV Server：负责存储数据，从外部看 TiKV 是一个分布式的提供事务的 Key-Value 存储引擎。存储数据的基本单位是 Region，每个 Region 负责存储一个 Key Range（从 StartKey 到 EndKey 的左闭右开区间）的数据，每个 TiKV 节点会负责多个 Region。TiKV 的 API 在 KV 键值对层面提供对分布式事务的原生支持，默认提供了 SI (Snapshot Isolation) 的隔离级别，这也是 TiDB 在 SQL 层面支持分布式事务的核心。TiDB 的 SQL 层做完 SQL 解析后，会将 SQL 的执行计划转换为对 TiKV API 的实际调用。所以，数据都存储在 TiKV 中。另外，TiKV 中的数据都会自动维护多副本（默认为三副本），天然支持高可用和自动故障转移。
   - TiFlash：TiFlash 是一类特殊的存储节点。和普通 TiKV 节点不一样的是，在 TiFlash 内部，数据是以列式的形式进行存储，主要的功能是为分析型的场景加速。
 
+## SQL层架构
+
+这幅图大体描述了 SQL 核心模块，大家可以从左边开始，顺着箭头的方向看。
+
+![](https://tva1.sinaimg.cn/large/008eGmZEly1gpnuiojrl4j30p20a2mz8.jpg)
+
+### Protocol Layer
+
+最左边是 TiDB 的 Protocol Layer，这里是与 Client 交互的接口，目前 TiDB 只支持 MySQL 协议，相关的代码都在 `server` 包中。
+
+这一层的主要功能是管理客户端 connection，解析 MySQL 命令并返回执行结果。具体的实现是按照 MySQL 协议实现，具体的协议可以参考 [MySQL 协议文档](https://dev.mysql.com/doc/internals/en/client-server-protocol.html)。这个模块我们认为是当前实现最好的一个 MySQL 协议组件，如果大家的项目中需要用到 MySQL 协议解析、处理的功能，可以参考或引用这个模块。
+
+连接建立的逻辑在 server.go 的 [Run()](https://github.com/pingcap/tidb/blob/source-code/server/server.go#L236) 方法中，主要是下面两行：
+
+```go
+conn, err := s.listener.Accept()
+go s.onConn(conn)
+```
+
+单个 Session 处理命令的入口方法是调用 clientConn 类的 [dispatch 方法](https://github.com/pingcap/tidb/blob/source-code/server/conn.go#L465)，这里会解析协议并转给不同的处理函数。
+
+### SQL Layer
+
+大体上讲，一条 SQL 语句需要经过，语法解析–>合法性验证–>制定查询计划–>优化查询计划–>根据计划生成查询器–>执行并返回结果 等一系列流程。这个主干对应于 TiDB 的下列包：
+
+| Package    | 作用                                          |
+| :--------- | :-------------------------------------------- |
+| tidb       | Protocol 层和 SQL 层之间的接口                |
+| parser     | 语法解析                                      |
+| plan       | 合法性验证 + 制定查询计划 + 优化查询计划      |
+| executor   | 执行器生成以及执行                            |
+| distsql    | 通过 TiKV Client 向 TiKV 发送以及汇总返回结果 |
+| store/tikv | TiKV Client                                   |
+
+### KV API Layer
+
+TiDB 依赖于底层的存储引擎提供数据的存取功能，但是并不是依赖于特定的存储引擎（比如 TiKV），而是对存储引擎提出一些要求，满足这些要求的引擎都能使用（其中 TiKV 是最合适的一款）。
+
+最基本的要求是『带事务的 Key-Value 引擎，且提供 Go 语言的 Driver』，再高级一点的要求是『支持分布式计算接口』，这样 TiDB 可以把一些计算请求下推到 存储引擎上进行。
+
+这些要求都可以在 `kv` 这个包的[接口](https://github.com/pingcap/tidb/blob/source-code/kv/kv.go)中找到，存储引擎需要提供实现了这些接口的 Go 语言 Driver，然后 TiDB 利用这些接口操作底层数据。
+
+对于最基本的要求，可以重点看这几个接口：
+
+- [Transaction](https://github.com/pingcap/tidb/blob/source-code/kv/kv.go#L121)：事务基本操作
+- [Retriever ](https://github.com/pingcap/tidb/blob/source-code/kv/kv.go#L75)：读取数据的接口
+- [Mutator](https://github.com/pingcap/tidb/blob/source-code/kv/kv.go#L91)：修改数据的接口
+- [Storage](https://github.com/pingcap/tidb/blob/source-code/kv/kv.go#L229)：Driver 提供的基本功能
+- [Snapshot](https://github.com/pingcap/tidb/blob/source-code/kv/kv.go#L214)：在数据 Snapshot 上面的操作
+- [Iterator](https://github.com/pingcap/tidb/blob/source-code/kv/kv.go#L255)：`Seek` 返回的结果，可以用于遍历数据
+
+有了上面这些接口，可以对数据做各种所需要的操作，完成全部 SQL 功能，但是为了更高效的进行运算，我们还定义了一个高级计算接口，可以关注这三个 Interface/struct :
+
+- [Client](https://github.com/pingcap/tidb/blob/source-code/kv/kv.go#L150)：向下层发送请求以及获取下层存储引擎的计算能力
+- [Request](https://github.com/pingcap/tidb/blob/source-code/kv/kv.go#L176): 请求的内容
+- [Response](https://github.com/pingcap/tidb/blob/source-code/kv/kv.go#L204): 返回结果的抽象
+
 ## 存储
 
 > 参考来源：[三篇文章了解 TiDB 技术内幕 - 说存储](https://pingcap.com/blog-cn/tidb-internal-1/)
