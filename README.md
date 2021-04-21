@@ -22,3 +22,5 @@
 ## 推荐阅读
 
 - [TiDB源码阅读](https://pingcap.com/blog-cn/#TiDB-%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB)
+- [TiDB从入门到实践](https://www.bilibili.com/video/BV1Xz4y1Q79U?p=3&spm_id_from=pageDriver)
+- [TiDB 精英进阶计划](https://www.bilibili.com/video/BV1pp4y1X7UQ?from=search&seid=14358703445510926872)
