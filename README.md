@@ -1,5 +1,5 @@
-# TIDB-tutorial
-本项目是TIDB教程。
+# TiDB-tutorial
+本项目是TiDB教程。
 
 > TIDB Github：[pingcap/tidb](https://github.com/pingcap/tidb)
 >
@@ -9,6 +9,8 @@
 
 - [什么是TIDB]()
 - [安装TIDB](https://docs.pingcap.com/zh/tidb/stable/quick-start-with-tidb)
+  - 启动：`tiup playground`
+  - 连接TiDB：`tiup client`
 - [TiDB原理]()
   - [TiDB架构]()
   - 存储
@@ -16,7 +18,14 @@
   - 调度
 - 源码结构
 - SQL流程
-- [SQL基本操作]()
+- [TiDB基本操作](./content/TiDB基本操作.md)
+  - 数据库操作
+  - 数据表操作
+  - 索引操作
+  - 记录的增删改查
+  - 用户操作
+- [TiDB进阶操作](./content/TiDB进阶操作.md)
+  - 读取历史数据
 - [事务]()
 
 ## 推荐阅读
