@@ -1,4 +1,4 @@
-参考：[如何用-sysbench-测试-tidb](https://docs.pingcap.com/zh/tidb/stable/benchmark-tidb-using-sysbench#%E5%A6%82%E4%BD%95%E7%94%A8-sysbench-%E6%B5%8B%E8%AF%95-tidb)
+p参考：[如何用-sysbench-测试-tidb](https://docs.pingcap.com/zh/tidb/stable/benchmark-tidb-using-sysbench#%E5%A6%82%E4%BD%95%E7%94%A8-sysbench-%E6%B5%8B%E8%AF%95-tidb)
 
 ## 修改集群yml文件
 
