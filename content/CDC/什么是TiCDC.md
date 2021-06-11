@@ -17,7 +17,9 @@ TiCDC的整体架构如下图所示：
 ### 系统角色
 
 - capture：就是一个cdc的实例
+
 - owner：owner 会维护全局的同步状态，会对集群的同步进行监控和适当的调度，owner 运行有以下逻辑：
+
   - table 同步调度调度 table 的同步任务，分发到某个节点或从某个节点删除
   - 维护运行的 processor 状态信息，对于异常节点进行清理
   - 执行处理 DDL，向下游同步 DDL
@@ -33,12 +35,19 @@ TiCDC的整体架构如下图所示：
       - Commit ts = 15
       - Resolved ts = 16
       - Prewrite 10 + commit 15 ⇒ 完整的已经提交的事务
-- processor：实际负责将TiKV中数据同步到下游的工作节点，它会负责几个table，并将这些表的 table id 按照 TiDB 内部的 key 编码逻辑进行编码得到一些需要获取 kv change log 的 key range，processor 会综合 key range 和 region 分布信息创建多个 EventFeed gRPC stream。具体流程如下
+
+- processor：实际负责将TiKV中数据同步到下游的工作节点。当 capture watch etcd 发现有新分配的 changefeed 同步任务到自己节点上时，会创建一个新的 processor 来进行数据同步，它会负责几个table，并将这些表的 table id 按照 TiDB 内部的 key 编码逻辑进行编码得到一些需要获取 kv change log 的 key range，processor 会综合 key range 和 region 分布信息创建多个 EventFeed gRPC stream。具体流程如下
+
   - 首先每个table中的数据是存在一个区间的也就是key range
   - 然后每个range中的数据会拆分为多个region存在多个tikv中
-  - cdc根据要同步的table定位到指定的region后会去pd中拿元信息，也就是对应的region存在那个TiKV中，并创建eventfeed连接到TiKV。
+  - cdc根据要同步的table定位到指定的region后会去pd中拿元信息，也就是对应的region存在那个TiKV中，并创建eventfeed连接到TiKV
   - eventfeed会根据regionid定位到TiKV中对应的raft group leader节点上
   - 接下来就是leader会将数据变化推送到TiKV cdc component，eventfeed同步数据到cdc中
+
+  processor具体功能还包括：
+
+  - 维护本地 ResolvedTS 和 CheckpointTS
+  - 根据全局 ResolvedTS 推进自己节点的数据向下游同步
 
 ## 同步功能介绍
 
