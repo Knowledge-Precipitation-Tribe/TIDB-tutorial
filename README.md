@@ -1,12 +1,12 @@
 # TiDB-tutorial
-本项目是TiDB教程。
+本项目是在学习 TiDB 及其周边生态工具 (CDC、DM) 的时候总结出的一些教程。
 
 > TIDB Github：[pingcap/tidb](https://github.com/pingcap/tidb)
 >
 > TIDB官方文档：[TIDB](https://docs.pingcap.com/zh/tidb/stable)
 
 ## 目录
-
+### TiDB
 - [什么是TIDB]()
 - [安装TIDB](https://docs.pingcap.com/zh/tidb/stable/quick-start-with-tidb)
   - 启动：`tiup playground`
@@ -28,6 +28,8 @@
   - 读取历史数据
 - [事务]()
 
+### TiCDC
+- [什么是CDC]()
 ## 推荐阅读
 
 - [TiDB源码阅读](https://pingcap.com/blog-cn/#TiDB-%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB)
