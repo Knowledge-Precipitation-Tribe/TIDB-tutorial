@@ -10,6 +10,8 @@
 
   ```bash
   tiup bench tpcc --warehouses 4 --parts 4 prepare
+  # 向指定集群写数据
+  tiup bench tpcc -H xxxx -P xxxx -D tpcc10 --warehouses 10  prepare
   ```
 
 - 运行 TPC-C 测试：
