@@ -2,3 +2,53 @@ CDC在与TiKV创建连接之后整个的数据流程如下
 
 ## 建立连接
 
+首先创建changefeed后由于其包含很多task会被owner分配到不同的processor进行处理，建立连接的时候会从PD中获取初始的TS，并从当前currentTS开始同步数据。步骤如下：
+
+- 增量扫（pull, catch-up reads）在这个阶段，TiKV 会根据 CDC 请求中的 [start-ts](https://docs.pingcap.com/zh/tidb/stable/manage-ticdc#管理同步任务-changefeed) 进行增量扫，输出的内容有：
+  - Prewrite，发生在 (checkpointTS, currentTS] 的上锁记录，也就是预先扫描，这个时候要将已经同步到下游的数据checkpointTS和currentTS的数据扫描一下，包括还没有提交的数据，而且接口返回的实时数据先 buffer。
+    -  EventFeed stream 会返回 [P + C](https://docs.google.com/document/d/1uOtA6fpzkr50w1VdIIy7YzRAcXjdiJUX0dgGhXy7bDc/edit)，所以建立 stream 的时候应该要先扫下还没提交的数据，不然可能后续只拿到个 C 没有对应的 value
+    - EventFeed 接口持续获取 raftstore 的 snapshot 扫出的 TS 后的数据变更， 拿到的信息包括：(key, value, Put/Delete, TS)。（如果对应的 row kv 已经 commit，返回 committed kv record，如果还没 commit，需要返回 prewrite record）
+  - Committed，发生在 (checkpointTS, currentTS] 的提交记录，即 prewrite + commit 之后的结果。也就是在第一步中已经预先扫描的数据发生了提交。
+  - Initialized，代表增量扫完成，后续不会有 committed 内容输出，TiKV 在此之后将会发送 Resolved TS。Resolved TS也就是在这个TS之前的所有数据cdc都已经获取到了。
+- 推流（push kv change event / tailing reads）这个阶段贯穿于整个 CDC 链接生命周期，将 region 上的写入实时推到下游，输出的内容有：
+  - Prewrite，region 上的上锁操作
+  - Commit，region 上的提交操作
+  - ResolvedTS，一个特殊的 TS，保证该 region 后续不会再出现小于该 TS 的提交操作
+
+## 数据流转
+
+![](https://tva1.sinaimg.cn/large/008i3skNly1gre6a93ggbj30xu0ciwfr.jpg)
+
+### KV Client
+
+TiCDC 根据 changefeed 信息，将 eventfeed 按 range 划分为不同的 regionfeed，通过 kvclient 与 TiKV region leader 建立连接，按 region 获取 kv change event.
+
+### Manger
+
+负责维护 Processor 生命周期（创建，销毁)
+
+### Processor
+
+根据存储在 etcd 的 meta 信息， 维护 Tablepipeline 的生命周期，并计算更新 ResolvedTS, ChenkpointTS
+
+### TablePipline
+
+![](https://tva1.sinaimg.cn/large/008i3skNly1gre6celvo5j60xa0akq3q02.jpg)
+
+负责监听 kv change event，经过 pipeline 处理后发送到下游。
+
+#### Puller
+
+通过 kvclient 获取 region kv change event，根据 table 涉及的 region ResolvedTS 生成 table-level ResolvedTS
+
+#### Sorter
+
+将 Puller 发送的 *timestamps < ResolvedTS* 的 merged/table-level kv change event 排序
+
+####Mounter
+
+负责将 kv change event 解码成可被 sink 消费的 RowchangedEvent
+
+####Sink
+
+负责将所有 DDLEvent, *commitTS < ResolvedTS*  的 RowchangedEvent全部同步到下游
