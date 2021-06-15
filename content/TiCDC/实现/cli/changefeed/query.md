@@ -96,16 +96,54 @@ func (c CDCEtcdClient) GetChangeFeedStatus(ctx context.Context, id string) (*mod
 }
 ```
 
-其中的[cdcEtcdCli.GetAllTaskPositions](https://github.com/pingcap/ticdc/blob/1c3653e292835b674fa47f0be7ac463ef64593fe/cdc/kv/etcd.go#L341)代码如下
+其中的[cdcEtcdCli.GetAllTaskPositions](https://github.com/pingcap/ticdc/blob/1c3653e292835b674fa47f0be7ac463ef64593fe/cdc/kv/etcd.go#L341)代码如下：
 
 ```go
 func (c CDCEtcdClient) GetAllTaskPositions(ctx context.Context, changefeedID string) (map[string]*model.TaskPosition, error) {
   // TaskPositionKeyPrefix = /tidb/cdc/task/position
+  // 当前方法会返回所有task的position
+  // TODO：需要看一下create中的逻辑是什么，为什么将changefeed作为前缀，然后返回所有position的做法
 	resp, err := c.Client.Get(ctx, TaskPositionKeyPrefix, clientv3.WithPrefix())
 	if err != nil {
 		return nil, cerror.WrapError(cerror.ErrPDEtcdAPIError, err)
 	}
 	positions := make(map[string]*model.TaskPosition, resp.Count)
+	for _, rawKv := range resp.Kvs {
+		changeFeed, err := model.ExtractKeySuffix(string(rawKv.Key))
+		if err != nil {
+			return nil, err
+		}
+    // 获取changefeed前缀，如果当前ID与要查询的ID不同则continue
+		endIndex := len(rawKv.Key) - len(changeFeed) - 1
+		captureID, err := model.ExtractKeySuffix(string(rawKv.Key[0:endIndex]))
+		if err != nil {
+			return nil, err
+		}
+		if changeFeed != changefeedID {
+			continue
+		}
+    // 将task信息添加到positions中
+		info := &model.TaskPosition{}
+		err = info.Unmarshal(rawKv.Value)
+		if err != nil {
+			return nil, cerror.ErrDecodeFailed.GenWithStackByArgs("failed to unmarshal task position: %s", err)
+		}
+		positions[captureID] = info
+	}
+	return positions, nil
+}
+```
+
+其中的[cdcEtcdCli.GetAllTaskStatus](https://github.com/pingcap/ticdc/blob/1c3653e292835b674fa47f0be7ac463ef64593fe/cdc/kv/etcd.go#L427)代码如下(具体逻辑与上一个函数差不多)：
+
+```go
+func (c CDCEtcdClient) GetAllTaskStatus(ctx context.Context, changefeedID string) (model.ProcessorsInfos, error) {
+  // TaskStatusKeyPrefix = /tidb/cdc/task/status
+	resp, err := c.Client.Get(ctx, TaskStatusKeyPrefix, clientv3.WithPrefix())
+	if err != nil {
+		return nil, cerror.WrapError(cerror.ErrPDEtcdAPIError, err)
+	}
+	pinfo := make(map[string]*model.TaskStatus, resp.Count)
 	for _, rawKv := range resp.Kvs {
 		changeFeed, err := model.ExtractKeySuffix(string(rawKv.Key))
 		if err != nil {
@@ -119,15 +157,17 @@ func (c CDCEtcdClient) GetAllTaskPositions(ctx context.Context, changefeedID str
 		if changeFeed != changefeedID {
 			continue
 		}
-		info := &model.TaskPosition{}
+		info := &model.TaskStatus{}
 		err = info.Unmarshal(rawKv.Value)
 		if err != nil {
-			return nil, cerror.ErrDecodeFailed.GenWithStackByArgs("failed to unmarshal task position: %s", err)
+			return nil, cerror.ErrDecodeFailed.GenWithStackByArgs("failed to unmarshal task status: %s", err)
 		}
-		positions[captureID] = info
+		info.ModRevision = rawKv.ModRevision
+		pinfo[captureID] = info
 	}
-	return positions, nil
+	return pinfo, nil
 }
+
 ```
 
 
