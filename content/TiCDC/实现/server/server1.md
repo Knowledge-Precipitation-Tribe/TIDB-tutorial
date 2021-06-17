@@ -147,12 +147,17 @@ func (s *Server) Run(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+  // 对外提供一些API服务
 	err = s.startStatusHTTP()
 	if err != nil {
 		return err
 	}
-
+  
+  // 初始化一些channel，具体作用暂时不清楚
+  // TODO：workpool作用
 	kv.InitWorkerPool()
+  // 创建TiStore
+  // TODO：了解具体作用
 	kvStore, err := kv.CreateTiStore(strings.Join(s.pdEndpoints, ","), conf.Security)
 	if err != nil {
 		return errors.Trace(err)
@@ -164,9 +169,13 @@ func (s *Server) Run(ctx context.Context) error {
 		}
 	}()
 	s.kvStorage = kvStore
+  // 将kvStore存储到contex中
 	ctx = util.PutKVStorageInCtx(ctx, kvStore)
+  // 新版本的owner和processor
 	if config.NewReplicaImpl {
+    // 创建capture
 		s.captureV2 = capture.NewCapture(s.pdClient, s.kvStorage, s.etcdClient)
+    // 运行当前capture，具体即使查看server2.md
 		return s.run(ctx)
 	}
 	// When a capture suicided, restart it
@@ -175,6 +184,55 @@ func (s *Server) Run(ctx context.Context) error {
 			return err
 		}
 		log.Info("server recovered", zap.String("capture-id", s.capture.info.ID))
+	}
+}
+```
+
+其中的[capture.NewCapture](https://github.com/pingcap/ticdc/blob/43c40f9d368a5f85beaf05080c3f11135648faa5/cdc/capture/capture.go#L68)代码如下：
+
+```go
+func NewCapture(pdClient pd.Client, kvStorage tidbkv.Storage, etcdClient *kv.CDCEtcdClient) *Capture {
+	return &Capture{
+		pdClient:   pdClient,
+		kvStorage:  kvStorage,
+		etcdClient: etcdClient,
+		cancel:     func() {},
+
+		newProcessorManager: processor.NewManager,
+		newOwner:            owner.NewOwner,
+	}
+}
+```
+
+可以看到在NewCapture函数中创建了processor的manager和owner。
+
+首先看[NewOwner](https://github.com/pingcap/ticdc/blob/43c40f9d368a5f85beaf05080c3f11135648faa5/cdc/owner/owner.go#L81)这个函数：
+
+```go
+func NewOwner() *Owner {
+	return &Owner{
+    // 维护一个根据changfeedID对应changfeed的哈希表
+		changefeeds:   make(map[model.ChangeFeedID]*changefeed),
+    // 创建GCManager
+    // TODO：搞清楚GCManager的作用
+		gcManager:     newGCManager(),
+		lastTickTime:  time.Now(),
+    // 连接到对应的changefeed
+		newChangefeed: newChangefeed,
+	}
+}
+```
+
+其次看[NewManager]()这个函数：
+
+```go
+func NewManager() *Manager {
+	return &Manager{
+    // 维护了一个changefeed与processor对于ing的哈希表
+		processors:   make(map[model.ChangeFeedID]*processor),
+		commandQueue: make(chan *command, 4),
+    // 新建processor
+		newProcessor: newProcessor,
 	}
 }
 ```

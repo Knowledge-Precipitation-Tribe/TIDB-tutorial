@@ -1,0 +1,2 @@
+新建的capture变成processor开始执行任务：
+
