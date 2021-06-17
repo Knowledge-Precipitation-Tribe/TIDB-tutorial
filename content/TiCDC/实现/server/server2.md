@@ -129,7 +129,7 @@ func (c *Capture) run(stdCtx context.Context) error {
       // when the campaignOwner returns an error, it means that the the owner throws an unrecoverable serious errors
       // (recoverable errors are intercepted in the owner tick)
       // so we should also stop the processor and let capture restart or exit
-      // 尝试选举成为owner
+      // 尝试选举成为owner，具体解析看server3.md
       ownerErr = c.campaignOwner(ctx)
       log.Info("the owner routine has exited", zap.Error(ownerErr))
    }()
@@ -141,7 +141,7 @@ func (c *Capture) run(stdCtx context.Context) error {
       // when the etcd worker of processor returns an error, it means that the the processor throws an unrecoverable serious errors
       // (recoverable errors are intercepted in the processor tick)
       // so we should also stop the owner and let capture restart or exit
-      // 开始执行processor的工作
+      // 开始执行processor的工作，具体解析看server4.md
       processorErr = c.runEtcdWorker(ctx, c.processorManager, model.NewGlobalState(), processorFlushInterval)
       log.Info("the processor routine has exited", zap.Error(processorErr))
    }()
