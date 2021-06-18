@@ -12,24 +12,31 @@
   - 启动：`tiup playground`
   - 连接TiDB：`tiup client`
 - [TiDB原理]()
-  - [TiDB架构]()
+  - TiDB架构
   - 存储
   - 计算
   - 调度
 - 源码结构
-- SQL流程
-- [TiDB基本操作](./content/TiDB基本操作.md)
-  - 数据库操作
-  - 数据表操作
-  - 索引操作
-  - 记录的增删改查
-  - 用户操作
-- [TiDB进阶操作](./content/TiDB进阶操作.md)
-  - 读取历史数据
-- [事务]()
+- 数据库操作
+  - [TiDB基本操作](./content/TiDB基本操作.md)
+    - 数据库操作
+    - 数据表操作
+    - 索引操作
+    - 记录的增删改查
+    - 用户操作
+  - [TiDB进阶操作](./content/TiDB进阶操作.md)
+    - 读取历史数据
+- [SQL流程]()
 
 ### TiCDC
-- [什么是CDC]()
+- [TiCDC术语表](https://github.com/Knowledge-Precipitation-Tribe/TIDB-tutorial/blob/main/content/TiCDC/0.%20TiCDC%E6%9C%AF%E8%AF%AD%E8%A1%A8.md)
+- [什么是CDC](https://github.com/Knowledge-Precipitation-Tribe/TIDB-tutorial/blob/main/content/TiCDC/1.%20%E4%BB%80%E4%B9%88%E6%98%AFTiCDC.md)
+- [CDC与TiKV连接](https://github.com/Knowledge-Precipitation-Tribe/TIDB-tutorial/blob/main/content/TiCDC/2.%20CDC%E4%B8%8ETiKV%E8%BF%9E%E6%8E%A5.md)
+- [高可用设计](https://github.com/Knowledge-Precipitation-Tribe/TIDB-tutorial/blob/main/content/TiCDC/3.%20%E9%AB%98%E5%8F%AF%E7%94%A8%E8%AE%BE%E8%AE%A1.md)
+### Chaos Mesh
+
+
+
 ## 推荐阅读
 
 - [TiDB源码阅读](https://pingcap.com/blog-cn/#TiDB-%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB)
