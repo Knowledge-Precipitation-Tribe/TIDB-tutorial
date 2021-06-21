@@ -36,6 +36,8 @@
 ### Chaos Mesh
 
 - [什么是Chaos Mesh]()
+- [Chaos Mesh基本功能]()
+- 安装
 
 ## 推荐阅读
 
