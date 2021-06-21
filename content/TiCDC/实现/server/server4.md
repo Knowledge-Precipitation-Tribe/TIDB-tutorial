@@ -31,3 +31,4 @@ func (c *Capture) runEtcdWorker(ctx cdcContext.Context, reactor orchestrator.Rea
 }
 ```
 
+具体操作逻辑与server3.md中的操作类似。
