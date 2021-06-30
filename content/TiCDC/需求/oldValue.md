@@ -244,17 +244,34 @@ CREATE TABLE IF NOT EXISTS `user`(
 );
 
 INSERT INTO user VALUES(1, "hello");
-DELETE FROM user WHERE id=1;
+INSERT INTO user VALUES(2, "world");
+DELETE FROM user WHERE id=2;
+INSERT INTO user VALUES(3, "go");
+UPDATE user SET name="java" WHERE id=3;
 ```
 
 开启Old Value
 
 ```log
-[2021/06/30 16:42:35.647 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":425995155430440961,\"commit-ts\":425995155430440962,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":58,\"is-partition\":false},\"table-info-version\":425995013148901383,\"replica-id\":0,\"columns\":null,\"pre-columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"d29ybGQ=\"}]}"]
+# insert操作
+[2021/06/30 17:23:02.242 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":425995791581577217,\"commit-ts\":425995791581577218,\"row-id\":1,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":425995789930070019,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":1},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"aGVsbG8=\"}],\"pre-columns\":null}"]
+
+# delete操作
+[2021/06/30 17:23:14.499 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":425995794308136962,\"commit-ts\":425995794308136963,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":425995789930070019,\"replica-id\":0,\"columns\":null,\"pre-columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"d29ybGQ=\"}]}"]
+
+# update操作
+[2021/06/30 17:23:24.301 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":425995797204828161,\"commit-ts\":425995797204828162,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":425995789930070019,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"amF2YQ==\"}],\"pre-columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"Z28=\"}]}"]
 ```
 不开启Old Value
 
 ```log
+# insert操作
+[2021/06/30 16:51:32.942 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":425995296216449025,\"commit-ts\":425995296216449026,\"row-id\":1,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":425995291864072195,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":1},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"aGVsbG8=\"}],\"pre-columns\":null}"]
+
+# delete操作
 [2021/06/30 16:52:25.846 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":425995310083604481,\"commit-ts\":425995310083604482,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":425995291864072195,\"replica-id\":0,\"columns\":null,\"pre-columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},null]}"]
+
+# update操作
+[2021/06/30 17:16:43.675 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":425995691829755906,\"commit-ts\":425995691829755907,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":425995291864072195,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"amF2YQ==\"}],\"pre-columns\":null}"]
 ```
 
