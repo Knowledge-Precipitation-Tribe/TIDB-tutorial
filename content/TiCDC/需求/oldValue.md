@@ -184,4 +184,77 @@ type TableInfo struct {
   - 如果表没有使用new collation则以不开启old value的形式拉取TiKV变更数据(防止性能降低)
 
 ## 测试
-将数据写到下游，然后打印输出。（具体操作形式需要探索一下）
+
+开启debug模式并修改log位置，[pkg/config/config.go第165行](https://github.com/pingcap/ticdc/blob/284dd55766f4f57b4c3550057c219bd1c92e5331/pkg/config/config.go#L165)
+
+```go
+var defaultServerConfig = &ServerConfig{
+	Addr:          "127.0.0.1:8300",
+	AdvertiseAddr: "",
+	LogFile:       "",
+	LogLevel:      "info",
+	Log: &LogConfig{
+		File: &LogFileConfig{
+			MaxSize:    300,
+			MaxDays:    0,
+			MaxBackups: 0,
+		},
+```
+
+修改是否同步old value，[pkg/config/config.go第46行](https://github.com/pingcap/ticdc/blob/284dd55766f4f57b4c3550057c219bd1c92e5331/pkg/config/config.go#L46)。
+
+```go
+var defaultReplicaConfig = &ReplicaConfig{
+	CaseSensitive:    true,
+	EnableOldValue:   true,
+	CheckGCSafePoint: true,
+	Filter: &FilterConfig{
+		Rules: []string{"*.*"},
+	},
+	Mounter: &MounterConfig{
+		WorkerNum: 16,
+	},
+	Sink: &SinkConfig{
+		Protocol: "default",
+	},
+	Cyclic: &CyclicConfig{
+		Enable: false,
+	},
+	Scheduler: &SchedulerConfig{
+		Tp:          "table-number",
+		PollingTime: -1,
+	},
+}
+```
+
+将数据写到blackhole，然后在日志中查找对应的log
+
+```bash
+grep "BlockHoleSink: EmitRowChangedEvents" ticdc.log
+```
+测试脚本
+
+```mysql
+CREATE DATABASE tidb_test;
+USE tidb_test;
+CREATE TABLE IF NOT EXISTS `user`(
+   `id` INT UNSIGNED,
+   `name` VARCHAR(100) NOT NULL,
+   PRIMARY KEY ( `id` )
+);
+
+INSERT INTO user VALUES(1, "hello");
+DELETE FROM user WHERE id=1;
+```
+
+开启Old Value
+
+```log
+[2021/06/30 16:42:35.647 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":425995155430440961,\"commit-ts\":425995155430440962,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":58,\"is-partition\":false},\"table-info-version\":425995013148901383,\"replica-id\":0,\"columns\":null,\"pre-columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"d29ybGQ=\"}]}"]
+```
+不开启Old Value
+
+```log
+[2021/06/30 16:52:25.846 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":425995310083604481,\"commit-ts\":425995310083604482,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":425995291864072195,\"replica-id\":0,\"columns\":null,\"pre-columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},null]}"]
+```
+
