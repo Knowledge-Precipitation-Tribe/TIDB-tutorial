@@ -275,3 +275,92 @@ UPDATE user SET name="java" WHERE id=3;
 [2021/06/30 17:16:43.675 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":425995691829755906,\"commit-ts\":425995691829755907,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":425995291864072195,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"amF2YQ==\"}],\"pre-columns\":null}"]
 ```
 
+new collation ,puller true, old value false
+
+```
+[2021/07/06 19:16:32.949 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426133472354500609,\"commit-ts\":426133472354500610,\"row-id\":1,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426133470833541131,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":1},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"aGVsbG8=\"}],\"pre-columns\":null}"]
+[2021/07/06 19:16:38.672 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426133473875197953,\"commit-ts\":426133473875197954,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426133470833541131,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"d29ybGQ=\"}],\"pre-columns\":null}"]
+[2021/07/06 19:16:43.675 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426133475250929665,\"commit-ts\":426133475250929666,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426133470833541131,\"replica-id\":0,\"columns\":null,\"pre-columns\":null}"]
+[2021/07/06 19:16:48.516 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426133476496113665,\"commit-ts\":426133476496113666,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426133470833541131,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"Z28=\"}],\"pre-columns\":null}"]
+[2021/07/06 19:16:53.673 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426133477845893121,\"commit-ts\":426133477845893122,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426133470833541131,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"amF2YQ==\"}],\"pre-columns\":null}"]
+```
+
+new collation ,puller false, old value true
+
+```
+[2021/07/06 19:25:17.840 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426133610113007617,\"commit-ts\":426133610113007618,\"row-id\":1,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426133608802025484,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":1},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"aGVsbG8=\"}],\"pre-columns\":null}"]
+[2021/07/06 19:25:24.240 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426133611371560961,\"commit-ts\":426133611371560962,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426133608802025484,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"d29ybGQ=\"}],\"pre-columns\":null}"]
+[2021/07/06 19:25:27.841 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426133612629590017,\"commit-ts\":426133612629590018,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426133608802025484,\"replica-id\":0,\"columns\":null,\"pre-columns\":null}"]
+[2021/07/06 19:25:32.015 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426133613809238017,\"commit-ts\":426133613809238018,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426133608802025484,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"Z28=\"}],\"pre-columns\":null}"]
+[2021/07/06 19:25:36.941 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426133615015100417,\"commit-ts\":426133615015100418,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426133608802025484,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"amF2YQ==\"}],\"pre-columns\":null}"]
+
+```
+
+new collation ,puller true, old value true
+
+```
+[2021/07/06 19:31:41.689 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426133710552432641,\"commit-ts\":426133710552432642,\"row-id\":1,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426133709529808907,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":1},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"aGVsbG8=\"}],\"pre-columns\":null}"]
+[2021/07/06 19:31:47.916 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426133711784771585,\"commit-ts\":426133711784771586,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426133709529808907,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"d29ybGQ=\"}],\"pre-columns\":null}"]
+[2021/07/06 19:31:52.487 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426133713357897729,\"commit-ts\":426133713357897730,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426133709529808907,\"replica-id\":0,\"columns\":null,\"pre-columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"d29ybGQ=\"}]}"]
+[2021/07/06 19:31:56.488 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426133714576080897,\"commit-ts\":426133714576080898,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426133709529808907,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"Z28=\"}],\"pre-columns\":null}"]
+[2021/07/06 19:32:02.887 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426133715860324353,\"commit-ts\":426133715860324354,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426133709529808907,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"amF2YQ==\"}],\"pre-columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"Z28=\"}]}"]
+```
+
+开启oldvalue, new collation关闭
+
+```
+[2021/07/07 10:48:43.585 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148134405537793,\"commit-ts\":426148134405537794,\"row-id\":1,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148133146722315,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":1},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"aGVsbG8=\"}],\"pre-columns\":null}"]
+[2021/07/07 10:48:49.586 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148135794900993,\"commit-ts\":426148135794900994,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148133146722315,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"d29ybGQ=\"}],\"pre-columns\":null}"]
+[2021/07/07 10:48:54.588 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148137091989505,\"commit-ts\":426148137091989506,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148133146722315,\"replica-id\":0,\"columns\":null,\"pre-columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"d29ybGQ=\"}]}"]
+[2021/07/07 10:49:01.884 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148138796187649,\"commit-ts\":426148138796187650,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148133146722315,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"Z28=\"}],\"pre-columns\":null}"]
+[2021/07/07 10:49:06.620 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148140264194049,\"commit-ts\":426148140264194050,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148133146722315,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"amF2YQ==\"}],\"pre-columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"Z28=\"}]}"]
+```
+
+关闭old value，new collation关闭
+
+```
+# insert操作
+[2021/07/07 10:53:40.457 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148211942752257,\"commit-ts\":426148211942752258,\"row-id\":1,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148210553126915,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":1},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"aGVsbG8=\"}],\"pre-columns\":null}"]
+
+# insert操作
+[2021/07/07 10:53:46.315 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148213541568513,\"commit-ts\":426148213541568515,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148210553126915,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"d29ybGQ=\"}],\"pre-columns\":null}"]
+
+# delete操作
+[2021/07/07 10:53:51.385 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148214826074115,\"commit-ts\":426148214826074116,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148210553126915,\"replica-id\":0,\"columns\":null,\"pre-columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},null]}"]
+
+# insert操作
+[2021/07/07 10:53:55.386 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148216045043713,\"commit-ts\":426148216045043714,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148210553126915,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"Z28=\"}],\"pre-columns\":null}"]
+
+# update操作
+[2021/07/07 10:54:00.388 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148217329811457,\"commit-ts\":426148217329811458,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148210553126915,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"amF2YQ==\"}],\"pre-columns\":null}"]
+```
+
+关闭old value，new collation开启
+
+```
+# insert操作
+[2021/07/07 10:58:34.436 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148289032486915,\"commit-ts\":426148289032486916,\"row-id\":1,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148287564480523,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":1},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"aGVsbG8=\"}],\"pre-columns\":null}"]
+
+# insert操作
+[2021/07/07 10:58:39.637 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148290383314945,\"commit-ts\":426148290383314946,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148287564480523,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"d29ybGQ=\"}],\"pre-columns\":null}"]
+
+# delete操作
+[2021/07/07 10:58:44.488 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148291680403457,\"commit-ts\":426148291680403458,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148287564480523,\"replica-id\":0,\"columns\":null,\"pre-columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},null]}"]
+
+# insert操作
+[2021/07/07 10:58:48.418 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148292964646913,\"commit-ts\":426148292964646914,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148287564480523,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"Z28=\"}],\"pre-columns\":null}"]
+
+# update操作
+[2021/07/07 10:58:54.636 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148294315212801,\"commit-ts\":426148294315212802,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148287564480523,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"amF2YQ==\"}],\"pre-columns\":null}"]
+```
+
+开启old value，new collation开启
+
+```
+[2021/07/07 11:01:56.480 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148341813346305,\"commit-ts\":426148341813346306,\"row-id\":1,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148340450197514,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":1},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"aGVsbG8=\"}],\"pre-columns\":null}"]
+[2021/07/07 11:02:00.708 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148343255138305,\"commit-ts\":426148343255138306,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148340450197514,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"d29ybGQ=\"}],\"pre-columns\":null}"]
+[2021/07/07 11:02:05.965 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148344580276225,\"commit-ts\":426148344580276226,\"row-id\":2,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148340450197514,\"replica-id\":0,\"columns\":null,\"pre-columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":2},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"d29ybGQ=\"}]}"]
+[2021/07/07 11:02:14.459 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148346453557249,\"commit-ts\":426148346453557250,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148340450197514,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"Z28=\"}],\"pre-columns\":null}"]
+[2021/07/07 11:02:18.059 +08:00] [DEBUG] [black_hole.go:41] ["BlockHoleSink: EmitRowChangedEvents"] [row="{\"start-ts\":426148347804123138,\"commit-ts\":426148347804123139,\"row-id\":3,\"table\":{\"db-name\":\"tidb_test\",\"tbl-name\":\"user\",\"tbl-id\":55,\"is-partition\":false},\"table-info-version\":426148340450197514,\"replica-id\":0,\"columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"amF2YQ==\"}],\"pre-columns\":[{\"name\":\"id\",\"type\":3,\"flag\":139,\"value\":3},{\"name\":\"name\",\"type\":15,\"flag\":0,\"value\":\"Z28=\"}]}"]
+```
+
